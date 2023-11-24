@@ -1,0 +1,150 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <Windows.h>
+using namespace std;
+
+const int NUM_EXAMS = 3;
+
+
+struct ABITURIENT {
+    string NAME;
+    string GENDER;
+    string SPECIALTY;
+    double EXAMS[NUM_EXAMS];
+};
+
+
+void inputAbiturient(ABITURIENT& abiturient) {
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    cout << "Прізвище та ініціали: ";
+    getline(cin, abiturient.NAME);
+
+    cout << "Стать: ";
+    getline(cin, abiturient.GENDER);
+
+    cout << "Спеціальність: ";
+    getline(cin, abiturient.SPECIALTY);
+
+    cout << "Результати вступних іспитів (введіть " << NUM_EXAMS << " оцінки): ";
+    for (int i = 0; i < NUM_EXAMS; ++i) {
+        cout << "Екзамен " << i + 1 << ": ";
+        cin >> abiturient.EXAMS[i];
+    }
+
+    cin.ignore();
+}
+
+
+void sortAbiturients(vector<ABITURIENT>& abiturients) {
+    sort(abiturients.begin(), abiturients.end(), [](const ABITURIENT& a, const ABITURIENT& b) {
+        return a.NAME < b.NAME;
+        });
+}
+
+
+void printPassingAbiturients(const vector<ABITURIENT>& abiturients, double passingScore) {
+    bool hasPassingAbiturients = false;
+
+    cout << "Абітурієнти, що набрали прохідний бал (" << passingScore << " і вище):" << endl;
+
+    for (const auto& abiturient : abiturients) {
+        double totalScore = 0.0;
+        for (int i = 0; i < NUM_EXAMS; ++i) {
+            totalScore += abiturient.EXAMS[i];
+        }
+
+        if (totalScore >= passingScore) {
+            cout << "Прізвище та ініціали: " << abiturient.NAME << ", Спеціальність: " << abiturient.SPECIALTY << endl;
+            hasPassingAbiturients = true;
+        }
+    }
+
+    if (!hasPassingAbiturients) {
+        cout << "Немає абітурієнтів, що набрали прохідний бал." << endl;
+    }
+}
+
+void ggwv() {
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+    int N;
+    cout << "Введіть розмір матриці: ";
+    cin >> N;
+
+    int** matrix = new int* [N];
+    for (int i = 0; i < N; i++)
+        matrix[i] = new int[N];
+
+    cout << "Введіть елементи матриці: \n";
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            cin >> matrix[i][j];
+
+    int* rowSum = new int[N];
+    int* colSum = new int[N];
+    for (int i = 0; i < N; i++) {
+        rowSum[i] = 0;
+        colSum[i] = 0;
+        for (int j = 0; j < N; j++) {
+            rowSum[i] += matrix[i][j];
+            colSum[j] += matrix[i][j];
+        }
+    }
+
+    int sum = 0;
+    for (int i = 0; i < N; i++) {
+        int count = 0;
+        for (int j = 0; j < N; j++) {
+            if (matrix[i][j] != 0)
+                count++;
+        }
+        if (count >= 2)
+            sum += rowSum[i];
+    }
+
+    cout << "Сума елементів рядків, які містять хоча б два ненульових елементи: " << sum << "\n";
+
+    for (int i = 0; i < N; i++)
+        delete[] matrix[i];
+    delete[] matrix;
+    delete[] rowSum;
+    delete[] colSum;
+
+
+}
+
+int main() {
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+
+    int numAbiturients;
+    cout << "Введіть кількість абітурієнтів: ";
+    cin >> numAbiturients;
+    cin.ignore();
+
+    vector<ABITURIENT> abiturients(numAbiturients);
+
+
+    for (int i = 0; i < numAbiturients; ++i) {
+        cout << "\nВведення даних для абітурієнта #" << i + 1 << ":" << endl;
+        inputAbiturient(abiturients[i]);
+    }
+
+
+    sortAbiturients(abiturients);
+
+
+    double passingScore;
+    cout << "\nВведіть прохідний бал: ";
+    cin >> passingScore;
+
+
+    printPassingAbiturients(abiturients, passingScore);
+
+    ggwv(); 
+
+    return 0;
+}
